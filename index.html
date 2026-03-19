@@ -260,7 +260,7 @@
                     </div>
                     <div class="px-4 pb-4 flex gap-3 items-center">
                         <div class="w-14 h-14 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100 relative">
-                            <img src=".png" alt="Termo Metálico Blue" class="w-full h-full object-cover" onerror="handleImageError(this)">
+                            <img src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400" alt="Termo Metálico Blue" class="w-full h-full object-cover" onerror="handleImageError(this)">
                         </div>
                         <div class="min-w-0 flex-1">
                             <p class="font-bold text-gray-900 text-sm leading-snug">Termo Metálico Blue</p>
@@ -297,7 +297,7 @@
                     </div>
                     <div class="p-4 flex gap-4 border-b border-gray-50">
                         <div class="w-20 h-20 rounded-2xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100 relative">
-                            <img src=".png" alt="Termo Metálico Blue" class="w-full h-full object-cover" onerror="handleImageError(this)">
+                            <img src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400" alt="Termo Metálico Blue" class="w-full h-full object-cover" onerror="handleImageError(this)">
                         </div>
                         <div class="min-w-0 flex-1">
                             <p class="font-black text-gray-900 leading-snug">Termo Metálico Blue</p>
@@ -366,7 +366,7 @@
 
                 <button type="button" onclick="showCuentaView('historial-detalle')" class="w-full text-left bg-white rounded-3xl border border-gray-100 shadow-sm p-4 flex gap-3 items-center hover:border-blue-200 transition-colors active:scale-[0.99]">
                     <div class="w-14 h-14 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100 relative">
-                        <img src=".png" alt="Termo Metálico Blue" class="w-full h-full object-cover" onerror="handleImageError(this)">
+                        <img src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400" alt="Termo Metálico Blue" class="w-full h-full object-cover" onerror="handleImageError(this)">
                     </div>
                     <div class="min-w-0 flex-1">
                         <p class="text-[10px] font-mono text-gray-400">PED-2026-08421</p>
@@ -398,7 +398,7 @@
                 <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
                     <div class="p-4 flex gap-4 border-b border-gray-50">
                         <div class="w-20 h-20 rounded-2xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100 relative">
-                            <img src=".png" alt="Termo Metálico Blue" class="w-full h-full object-cover" onerror="handleImageError(this)">
+                            <img src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400" alt="Termo Metálico Blue" class="w-full h-full object-cover" onerror="handleImageError(this)">
                         </div>
                         <div class="min-w-0 flex-1">
                             <p class="font-black text-gray-900 leading-snug">Termo Metálico Blue</p>
@@ -569,21 +569,26 @@
         const MEMBER_ID = 'FT-8822-0941-2024';
 
         /** Top ventas: datos mock para big cards */
+        const imgTermoBlue = 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400';
+
         const mejorVendidos = [
             { id: 4, rank: 1, name: 'Morral Corporativo', points: 1200, category: 'Equipaje', soldLabel: '248 canjes', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800', badgeClass: 'from-amber-400 to-orange-500' },
-            { id: 3, rank: 2, name: 'Termo Metálico Blue', points: 450, category: 'Accesorios', soldLabel: '196 canjes', image: '.png', badgeClass: 'from-slate-300 to-slate-400' },
-            { id: 1, rank: 3, name: 'Camiseta "Qué bien me queda"', points: 500, category: 'Ropa', soldLabel: '172 canjes', image: 'Camisa.png', badgeClass: 'from-amber-600 to-amber-800' },
+            { id: 3, rank: 2, name: 'Termo Metálico Blue', points: 450, category: 'Accesorios', soldLabel: '196 canjes', image: imgTermoBlue, badgeClass: 'from-slate-300 to-slate-400' },
+            { id: 1, rank: 3, name: 'Camiseta "Qué bien me queda"', points: 500, category: 'Ropa', soldLabel: '172 canjes', image: 'img/sueter.png', badgeClass: 'from-amber-600 to-amber-800' },
         ];
 
         const productosFarmatodo = [
-            { id: 1, name: 'Camiseta "Qué bien me queda"', points: 500, category: 'Ropa', image: 'Camisa.png' },
-            { id: 2, name: 'Gorra Corporativa Premium', points: 350, category: 'Accesorios', image: 'Gemini_Generated_Image_ze596kze596kze59.png' },
-            { id: 3, name: 'Termo Metálico Blue', points: 450, category: 'Accesorios', image: '.png' },
+            { id: 1, name: 'Camiseta "Qué bien me queda"', points: 500, category: 'Ropa', image: 'img/sueter.png' },
+            { id: 2, name: 'Gorra Corporativa Premium', points: 350, category: 'Accesorios', image: 'img/gorras.png' },
+            { id: 3, name: 'Termo Metálico Blue', points: 450, category: 'Accesorios', image: imgTermoBlue },
             { id: 4, name: 'Morral Corporativo', points: 1200, category: 'Equipaje', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400' },
+            { id: 5, name: 'Corta viento corporativo', points: 680, category: 'Ropa', image: 'img/corta%20viento.png' },
+            { id: 6, name: 'Suéter corporativo ed. limitada', points: 520, category: 'Ropa', image: 'img/sueter2.png' },
+            { id: 7, name: 'Taza Farmatodo', points: 180, category: 'Hogar', image: 'img/taza.png' },
         ];
 
         const temporadaVerano = [
-            { id: 201, name: 'Kit protector solar corporativo', points: 320, category: 'Verano', image: 'https://images.unsplash.com/photo-1526947425960-945c6e85659e?w=400' },
+            { id: 201, name: 'Kit protector solar corporativo', points: 320, category: 'Verano', image: 'img/kit%20protector.png' },
             { id: 202, name: 'Gorra visera UV', points: 280, category: 'Verano', image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400' },
             { id: 203, name: 'Botella térmica 1L', points: 410, category: 'Verano', image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400' },
         ];
@@ -611,18 +616,15 @@
                 group: true,
                 brand: 'Cubbit',
                 items: [
-                    { name: 'Audífonos Bluetooth Pro', discountPoints: 1200, desc: '30% de descuento', image: 'audifonos%20cubit.webp' },
-                    { name: 'Termo Hidratación', discountPoints: 900, desc: 'Beneficio exclusivo', image: 'termo%20curbbit.webp' },
+                    { name: 'Audífonos Bluetooth Pro', discountPoints: 1200, desc: '30% de descuento', image: 'img/Audifonos%20Cubbit.png' },
+                    { name: 'Termo Hidratación', discountPoints: 900, desc: 'Beneficio exclusivo', image: 'img/Termo%20Cubbit.png' },
                 ],
             },
         ];
 
         const blueExclusivo = [
-            { id: 301, name: 'Taza Farmatodo', points: 180, category: 'Blue Exclusivo', image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=400' },
-            { id: 302, name: 'Pin Corporativo', points: 90, category: 'Blue Exclusivo', image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400' },
+            { id: 302, name: 'Pin Corporativo', points: 90, category: 'Blue Exclusivo', image: 'img/pin%20coorporativo.png' },
             { id: 303, name: 'Cuaderno Premium', points: 220, category: 'Blue Exclusivo', image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400' },
-            { id: 304, name: 'Llavero Blue', points: 120, category: 'Blue Exclusivo', image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400' },
-            { id: 305, name: 'Bolígrafo Ed. Especial', points: 75, category: 'Blue Exclusivo', image: 'https://images.unsplash.com/photo-1585336261022-6808d3e8e1c2?w=400' },
             { id: 306, name: 'Sticker Pack', points: 50, category: 'Blue Exclusivo', image: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=400' },
         ];
 
