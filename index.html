@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace Interno Farmatodo</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Estilos personalizados -->
+    <style>
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInFromBottom { from { transform: translateY(1rem); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        .animate-slide-in { animation: slideInFromBottom 0.5s ease-out forwards; }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        /* Logo Farmatodo: redondeado salvo esquina inferior derecha */
+        .logo-farmatodo-wrap {
+            background-color: #003B94;
+            border-radius: 1rem 1rem 0 1rem;
+            padding: 0.5rem 0.75rem;
+        }
+        .nav-scan-fab {
+            background-color: #003B94;
+            box-shadow: 0 10px 25px -5px rgba(0, 59, 148, 0.45), 0 8px 10px -6px rgba(0, 59, 148, 0.35);
+        }
+        .nav-scan-fab.is-active {
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.35), 0 12px 28px -4px rgba(0, 59, 148, 0.5);
+        }
+        .icon-container.is-nav-active {
+            background-color: #003B94;
+            color: #fff;
+            box-shadow: 0 10px 15px -3px rgba(0, 59, 148, 0.2), 0 4px 6px -4px rgba(0, 59, 148, 0.12);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col font-sans selection:bg-blue-100 min-h-screen pb-40">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-lg p-4 shadow-sm border-b border-gray-100 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <a href="#" class="logo-farmatodo-wrap flex items-center justify-center shrink-0" aria-label="Farmatodo Marketplace">
+                <img src="logo-farmatodo.png" alt="Farmatodo" class="h-9 w-auto max-w-[200px] object-contain object-left" width="200" height="36">
+            </a>
+            <div class="flex items-center gap-2 shrink-0">
+                <div id="header-points" class="bg-[#003B94] px-4 py-1.5 rounded-full flex items-center gap-2 shadow-md">
+                    <i class="ph-fill ph-star text-white text-sm"></i>
+                    <span class="text-white font-black text-sm" id="user-points-display">2,550 PTS</span>
+                </div>
+                <!-- Botón carrito -->
+                <button type="button" id="header-cart-btn" onclick="toggleCart()" class="relative flex items-center justify-center w-10 h-10 rounded-2xl bg-white border border-gray-200 shadow-sm hover:bg-blue-50 hover:border-blue-200 transition-colors" aria-label="Carrito de compras">
+                    <i class="ph ph-shopping-cart text-[#003B94] text-xl"></i>
+                    <span id="cart-badge" class="hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-black min-w-[1.1rem] h-[1.1rem] px-0.5 rounded-full items-center justify-center leading-none">0</span>
+                </button>
+                <button type="button" id="header-logout" onclick="cerrarSesion()" class="hidden items-center gap-1.5 text-red-600 font-bold text-xs sm:text-sm px-3 py-2 rounded-xl border border-red-100 bg-red-50 hover:bg-red-100 transition-colors whitespace-nowrap" aria-label="Cerrar sesión">
+                    <i class="ph ph-sign-out text-base sm:text-lg"></i>
+                    <span class="hidden sm:inline">Cerrar sesión</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-4xl mx-auto w-full pt-4 px-4 relative">
+        
+        <!-- Pestaña: Inicio -->
+        <section id="tab-inicio" class="tab-content animate-slide-in space-y-10">
+            <div class="mb-2">
+                <h2 class="text-2xl font-black text-[#003B94]">Inicio</h2>
+                <p class="text-gray-400 text-sm font-medium italic">Productos corporativos y temporada</p>
+            </div>
+
+            <!-- Mejor vendidos (big cards) -->
+            <div>
+                <div class="flex items-center justify-between gap-2 mb-3">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <i class="ph ph-trend-up text-[#003B94] text-xl shrink-0"></i>
+                        <h3 class="text-lg font-black text-gray-900 truncate">Mejor vendidos</h3>
+                    </div>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider shrink-0">Top canjes</span>
+                </div>
+                <div id="mas-vendidos-container" class="flex flex-col gap-3"></div>
+            </div>
+
+            <!-- Productos Farmatodo -->
+            <div>
+                <div class="flex items-center gap-2 mb-3">
+                    <i class="ph ph-storefront text-[#003B94] text-xl"></i>
+                    <h3 class="text-lg font-black text-gray-900">Productos Farmatodo</h3>
+                </div>
+                <div id="productos-farmatodo-container" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+            </div>
+
+            <!-- Temporada de verano -->
+            <div>
+                <div class="flex items-center gap-2 mb-3">
+                    <i class="ph ph-sun text-amber-500 text-xl"></i>
+                    <h3 class="text-lg font-black text-gray-900">Temporada de verano</h3>
+                </div>
+                <div id="verano-container" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+            </div>
+
+            <!-- Blue Exclusivo -->
+            <div>
+                <div class="flex items-center justify-between gap-2 mb-3">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <i class="ph ph-identification-card text-[#003B94] text-xl shrink-0"></i>
+                        <h3 class="text-lg font-black text-gray-900 truncate">Blue Exclusivo</h3>
+                    </div>
+                    <span class="text-[10px] font-bold text-[#003B94] uppercase tracking-wider shrink-0">Solo puntos</span>
+                </div>
+                <div id="blue-exclusivo-container" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- Pestaña: Colaboraciones -->
+        <section id="tab-colaboraciones" class="tab-content hidden animate-slide-in">
+            <div class="mb-6">
+                <h2 class="text-2xl font-black text-[#003B94]">Colaboraciones</h2>
+                <p class="text-gray-400 text-sm font-medium italic">Alianzas y beneficios exclusivos</p>
+            </div>
+            <div id="colaboraciones-container" class="flex flex-col gap-4"></div>
+        </section>
+
+        <!-- Pestaña: Blue Card -->
+        <section id="tab-blue-card" class="tab-content hidden animate-slide-in max-w-md mx-auto w-full p-2">
+            <div id="blue-card-overview" class="space-y-5">
+                <div class="w-full bg-gradient-to-br from-[#003B94] to-[#0052CC] rounded-3xl p-6 text-white shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-8 opacity-10"><i class="ph ph-medal text-[120px]"></i></div>
+                    <div class="flex justify-between items-start mb-12">
+                        <div>
+                            <h2 class="text-2xl font-bold tracking-tight">Blue Card</h2>
+                            <p class="text-blue-100 text-xs opacity-80 uppercase tracking-widest">Colaborador Farmatodo</p>
+                        </div>
+                    </div>
+                    <div class="mb-8 relative z-10">
+                        <p class="text-[10px] uppercase opacity-70 mb-1 tracking-widest">Nombre del Titular</p>
+                        <p class="text-xl font-bold tracking-tight uppercase">Ricardo Sandoval</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl flex flex-col items-center shadow-inner">
+                        <img id="blue-card-qr" src="" alt="Código QR Blue Connect" class="w-32 h-32 object-contain mb-2" width="128" height="128">
+                        <p class="text-black font-mono text-xs tracking-[0.3em] font-bold">FT-8822-0941-2024</p>
+                    </div>
+                </div>
+                <button type="button" onclick="showBlueCardScanner(true)" class="w-full bg-[#003B94] text-white font-black py-3.5 rounded-2xl shadow-lg shadow-blue-100 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-sm sm:text-base">
+                    <i class="ph ph-camera text-lg sm:text-xl"></i>
+                    Ir a escaneo
+                </button>
+
+                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                        <h3 class="font-black text-gray-900 text-sm">Historial de transacciones</h3>
+                        <i class="ph ph-receipt text-gray-400 text-lg"></i>
+                    </div>
+                    <ul id="historial-transacciones" class="divide-y divide-gray-50 max-h-[16rem] overflow-y-auto"></ul>
+                </div>
+            </div>
+
+            <div id="blue-card-scanner" class="hidden space-y-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <button type="button" onclick="showBlueCardScanner(false)" class="flex items-center justify-center w-11 h-11 rounded-2xl border border-gray-200 bg-white text-[#003B94] shadow-sm hover:bg-gray-50" aria-label="Volver a la tarjeta">
+                        <i class="ph ph-arrow-left text-xl"></i>
+                    </button>
+                    <div>
+                        <h2 class="text-xl font-black text-[#003B94] leading-tight">Escanear</h2>
+                        <p class="text-gray-400 text-xs font-medium">Lector o cámara del mostrador</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 text-center">
+                    <div class="w-48 h-48 mx-auto bg-gray-900 rounded-3xl flex items-center justify-center mb-6 relative overflow-hidden">
+                        <div class="absolute inset-4 border-2 border-white/30 rounded-2xl"></div>
+                        <i class="ph ph-qr-code text-white text-7xl relative z-10"></i>
+                    </div>
+                    <p class="text-gray-800 font-bold mb-2">Modo escaneo</p>
+                    <p class="text-sm text-gray-500 mb-6">Apunta al código o pasa tu tarjeta por el lector.</p>
+                    <button type="button" class="w-full bg-[#003B94] text-white font-black py-4 rounded-2xl shadow-lg shadow-blue-100 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
+                        <i class="ph ph-camera text-xl"></i>
+                        Abrir escáner
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pestaña: Campañas -->
+        <section id="tab-campanas" class="tab-content hidden animate-slide-in">
+            <div class="mb-6">
+                <h2 class="text-2xl font-black text-[#003B94]">Campañas</h2>
+                <p class="text-gray-400 text-sm font-medium italic">Participa y gana puntos extra</p>
+            </div>
+            <div id="campanas-container" class="flex flex-col gap-4"></div>
+        </section>
+
+        <!-- Pestaña: Mi Cuenta -->
+        <section id="tab-usuario" class="tab-content hidden animate-fade-in max-w-md mx-auto w-full p-2">
+            <!-- Inicio cuenta -->
+            <div id="cuenta-view-home" class="cuenta-view space-y-6">
+                <div>
+                    <h2 class="text-2xl font-black text-[#003B94]">Mi cuenta</h2>
+                    <p class="text-gray-400 text-sm font-medium italic">Tu perfil y pedidos</p>
+                </div>
+
+                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 flex gap-4 items-center">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#003B94] to-[#0052CC] flex items-center justify-center text-white shadow-lg shadow-blue-100 shrink-0">
+                        <span class="text-xl font-black">RS</span>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p class="font-black text-gray-900 text-lg leading-tight truncate">Ricardo Sandoval</p>
+                        <p class="text-sm text-gray-500 truncate">ricardo.sandoval@farmatodo.com</p>
+                        <p class="text-[11px] text-gray-400 font-mono mt-1 truncate">Colaborador · <span class="text-gray-600">FT-8822-0941-2024</span></p>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Accesos rápidos</p>
+                    <button type="button" onclick="showCuentaView('pagos')" class="w-full flex items-center gap-4 bg-white rounded-2xl border border-gray-100 shadow-sm px-4 py-4 text-left hover:border-blue-200 hover:bg-blue-50/40 transition-colors active:scale-[0.99]">
+                        <span class="w-11 h-11 rounded-xl bg-blue-50 text-[#003B94] flex items-center justify-center shrink-0"><i class="ph ph-credit-card text-xl"></i></span>
+                        <span class="flex-1 min-w-0 font-bold text-gray-900">Métodos de pago</span>
+                        <i class="ph ph-caret-right text-gray-300 text-lg shrink-0"></i>
+                    </button>
+                    <button type="button" onclick="showCuentaView('pedidos')" class="w-full flex items-center gap-4 bg-white rounded-2xl border border-gray-100 shadow-sm px-4 py-4 text-left hover:border-blue-200 hover:bg-blue-50/40 transition-colors active:scale-[0.99]">
+                        <span class="w-11 h-11 rounded-xl bg-blue-50 text-[#003B94] flex items-center justify-center shrink-0"><i class="ph ph-package text-xl"></i></span>
+                        <span class="flex-1 min-w-0 font-bold text-gray-900">Estado de los pedidos</span>
+                        <i class="ph ph-caret-right text-gray-300 text-lg shrink-0"></i>
+                    </button>
+                    <button type="button" onclick="showCuentaView('historial')" class="w-full flex items-center gap-4 bg-white rounded-2xl border border-gray-100 shadow-sm px-4 py-4 text-left hover:border-blue-200 hover:bg-blue-50/40 transition-colors active:scale-[0.99]">
+                        <span class="w-11 h-11 rounded-xl bg-blue-50 text-[#003B94] flex items-center justify-center shrink-0"><i class="ph ph-shopping-bag text-xl"></i></span>
+                        <span class="flex-1 min-w-0 font-bold text-gray-900">Historial de compras</span>
+                        <i class="ph ph-caret-right text-gray-300 text-lg shrink-0"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Estado de pedidos — LISTA -->
+            <div id="cuenta-view-pedidos" class="cuenta-view hidden space-y-4">
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="showCuentaView('home')" class="flex items-center justify-center w-11 h-11 rounded-2xl border border-gray-200 bg-white text-[#003B94] shadow-sm hover:bg-gray-50" aria-label="Volver">
+                        <i class="ph ph-arrow-left text-xl"></i>
+                    </button>
+                    <div>
+                        <h2 class="text-xl font-black text-[#003B94] leading-tight">Estado de pedidos</h2>
+                        <p class="text-gray-400 text-xs">1 pedido activo</p>
+                    </div>
+                </div>
+
+                <button type="button" onclick="showCuentaView('pedido-detalle')" class="w-full text-left bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden hover:border-blue-200 transition-colors active:scale-[0.99]">
+                    <div class="px-4 pt-4 pb-3 flex justify-between items-start gap-3">
+                        <div>
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pedido</p>
+                            <p class="font-mono font-bold text-gray-900 text-sm">PED-2026-08421</p>
+                        </div>
+                        <span class="shrink-0 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wide bg-amber-50 text-amber-800 px-2.5 py-1.5 rounded-xl border border-amber-100">
+                            <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span></span>
+                            En camino
+                        </span>
+                    </div>
+                    <div class="px-4 pb-4 flex gap-3 items-center">
+                        <div class="w-14 h-14 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100 relative">
+                            <img src=".png" alt="Termo Metálico Blue" class="w-full h-full object-cover" onerror="handleImageError(this)">
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p class="font-bold text-gray-900 text-sm leading-snug">Termo Metálico Blue</p>
+                            <p class="text-xs text-[#003B94] font-black mt-0.5">450 PTS</p>
+                            <p class="text-[11px] text-gray-400 mt-1">15 mar 2026</p>
+                        </div>
+                        <i class="ph ph-caret-right text-gray-300 text-lg shrink-0"></i>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Estado de pedidos — DETALLE -->
+            <div id="cuenta-view-pedido-detalle" class="cuenta-view hidden space-y-4">
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="showCuentaView('pedidos')" class="flex items-center justify-center w-11 h-11 rounded-2xl border border-gray-200 bg-white text-[#003B94] shadow-sm hover:bg-gray-50" aria-label="Volver">
+                        <i class="ph ph-arrow-left text-xl"></i>
+                    </button>
+                    <div>
+                        <h2 class="text-xl font-black text-[#003B94] leading-tight">Detalle del pedido</h2>
+                        <p class="text-gray-400 text-xs">Seguimiento en tiempo real</p>
+                    </div>
+                </div>
+
+                <article class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-gray-50 flex justify-between items-start gap-3">
+                        <div>
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Número de pedido</p>
+                            <p class="font-mono font-bold text-gray-900">PED-2026-08421</p>
+                        </div>
+                        <span class="shrink-0 inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wide bg-amber-50 text-amber-800 px-3 py-1.5 rounded-xl border border-amber-100">
+                            <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span></span>
+                            En camino
+                        </span>
+                    </div>
+                    <div class="p-4 flex gap-4 border-b border-gray-50">
+                        <div class="w-20 h-20 rounded-2xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100 relative">
+                            <img src=".png" alt="Termo Metálico Blue" class="w-full h-full object-cover" onerror="handleImageError(this)">
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p class="font-black text-gray-900 leading-snug">Termo Metálico Blue</p>
+                            <p class="text-sm text-[#003B94] font-black mt-1">450 PTS</p>
+                            <p class="text-xs text-gray-400 mt-2">Canje · 15 mar 2026</p>
+                        </div>
+                    </div>
+                    <div class="px-4 pb-5 pt-4">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Progreso del envío</p>
+                        <ol class="space-y-0">
+                            <li class="flex gap-3">
+                                <div class="flex flex-col items-center">
+                                    <span class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0"><i class="ph ph-check-bold text-sm"></i></span>
+                                    <div class="w-0.5 flex-1 min-h-[1.5rem] bg-emerald-500 mt-0.5"></div>
+                                </div>
+                                <div class="pb-5 pt-0.5">
+                                    <p class="font-bold text-gray-900 text-sm">Confirmado</p>
+                                    <p class="text-xs text-gray-400">14 mar, 09:12 · Pedido recibido</p>
+                                </div>
+                            </li>
+                            <li class="flex gap-3">
+                                <div class="flex flex-col items-center">
+                                    <span class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0"><i class="ph ph-check-bold text-sm"></i></span>
+                                    <div class="w-0.5 flex-1 min-h-[1.5rem] bg-emerald-500 mt-0.5"></div>
+                                </div>
+                                <div class="pb-5 pt-0.5">
+                                    <p class="font-bold text-gray-900 text-sm">En preparación</p>
+                                    <p class="text-xs text-gray-400">14 mar, 16:40 · Almacén Caracas Norte</p>
+                                </div>
+                            </li>
+                            <li class="flex gap-3">
+                                <div class="flex flex-col items-center">
+                                    <span class="w-8 h-8 rounded-full bg-[#003B94] text-white flex items-center justify-center shrink-0 ring-4 ring-blue-100"><i class="ph ph-truck text-sm"></i></span>
+                                    <div class="w-0.5 flex-1 min-h-[1.5rem] bg-gray-200 mt-0.5"></div>
+                                </div>
+                                <div class="pb-5 pt-0.5">
+                                    <p class="font-bold text-[#003B94] text-sm">En camino</p>
+                                    <p class="text-xs text-gray-400">16 mar, 08:05 · Reparto interno Farmatodo</p>
+                                </div>
+                            </li>
+                            <li class="flex gap-3">
+                                <div class="flex flex-col items-center">
+                                    <span class="w-8 h-8 rounded-full border-2 border-dashed border-gray-300 bg-gray-50 text-gray-300 flex items-center justify-center shrink-0"><i class="ph ph-house text-sm"></i></span>
+                                </div>
+                                <div class="pt-0.5">
+                                    <p class="font-bold text-gray-400 text-sm">Entregado</p>
+                                    <p class="text-xs text-gray-400">Pendiente</p>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Historial de compras — LISTA -->
+            <div id="cuenta-view-historial" class="cuenta-view hidden space-y-4">
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="showCuentaView('home')" class="flex items-center justify-center w-11 h-11 rounded-2xl border border-gray-200 bg-white text-[#003B94] shadow-sm hover:bg-gray-50" aria-label="Volver">
+                        <i class="ph ph-arrow-left text-xl"></i>
+                    </button>
+                    <div>
+                        <h2 class="text-xl font-black text-[#003B94] leading-tight">Historial de compras</h2>
+                        <p class="text-gray-400 text-xs">Tus canjes en el marketplace</p>
+                    </div>
+                </div>
+
+                <button type="button" onclick="showCuentaView('historial-detalle')" class="w-full text-left bg-white rounded-3xl border border-gray-100 shadow-sm p-4 flex gap-3 items-center hover:border-blue-200 transition-colors active:scale-[0.99]">
+                    <div class="w-14 h-14 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100 relative">
+                        <img src=".png" alt="Termo Metálico Blue" class="w-full h-full object-cover" onerror="handleImageError(this)">
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-[10px] font-mono text-gray-400">PED-2026-08421</p>
+                        <p class="font-black text-gray-900 text-sm leading-snug mt-0.5">Termo Metálico Blue</p>
+                        <div class="flex items-center gap-2 mt-1.5">
+                            <span class="text-xs font-black text-[#003B94]">450 PTS</span>
+                            <span class="text-[11px] text-gray-400">15 mar 2026</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end gap-2 shrink-0">
+                        <span class="text-[10px] font-black uppercase tracking-wide bg-amber-50 text-amber-800 px-2 py-1 rounded-lg">En camino</span>
+                        <i class="ph ph-caret-right text-gray-300 text-base"></i>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Historial de compras — DETALLE -->
+            <div id="cuenta-view-historial-detalle" class="cuenta-view hidden space-y-4">
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="showCuentaView('historial')" class="flex items-center justify-center w-11 h-11 rounded-2xl border border-gray-200 bg-white text-[#003B94] shadow-sm hover:bg-gray-50" aria-label="Volver">
+                        <i class="ph ph-arrow-left text-xl"></i>
+                    </button>
+                    <div>
+                        <h2 class="text-xl font-black text-[#003B94] leading-tight">Detalle de compra</h2>
+                        <p class="text-gray-400 text-xs font-mono">PED-2026-08421</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="p-4 flex gap-4 border-b border-gray-50">
+                        <div class="w-20 h-20 rounded-2xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100 relative">
+                            <img src=".png" alt="Termo Metálico Blue" class="w-full h-full object-cover" onerror="handleImageError(this)">
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p class="font-black text-gray-900 leading-snug">Termo Metálico Blue</p>
+                            <p class="text-sm text-[#003B94] font-black mt-1">450 PTS</p>
+                            <p class="text-xs text-gray-400 mt-2">15 mar 2026</p>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-gray-50 text-sm">
+                        <div class="px-4 py-3 flex justify-between">
+                            <span class="text-gray-500">Número de pedido</span>
+                            <span class="font-mono font-bold text-gray-900">PED-2026-08421</span>
+                        </div>
+                        <div class="px-4 py-3 flex justify-between">
+                            <span class="text-gray-500">Estado</span>
+                            <span class="font-black text-amber-700">En camino</span>
+                        </div>
+                        <div class="px-4 py-3 flex justify-between">
+                            <span class="text-gray-500">Fecha de canje</span>
+                            <span class="font-bold text-gray-900">15 mar 2026</span>
+                        </div>
+                        <div class="px-4 py-3 flex justify-between">
+                            <span class="text-gray-500">Puntos usados</span>
+                            <span class="font-black text-[#003B94]">450 PTS</span>
+                        </div>
+                        <div class="px-4 py-3 flex justify-between">
+                            <span class="text-gray-500">Método</span>
+                            <span class="font-bold text-gray-900">Canje Blue Connect</span>
+                        </div>
+                        <div class="px-4 py-3 flex justify-between">
+                            <span class="text-gray-500">Entrega estimada</span>
+                            <span class="font-bold text-gray-900">18–20 mar 2026</span>
+                        </div>
+                    </div>
+                    <div class="px-4 py-4">
+                        <button type="button" onclick="showCuentaView('pedido-detalle')" class="w-full flex items-center justify-center gap-2 bg-blue-50 text-[#003B94] font-black py-3 rounded-2xl text-sm hover:bg-blue-100 transition-colors">
+                            <i class="ph ph-truck text-base"></i>
+                            Ver seguimiento
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Métodos de pago: una tarjeta Mastercard + agregar -->
+            <div id="cuenta-view-pagos" class="cuenta-view hidden space-y-4">
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="showCuentaView('home')" class="flex items-center justify-center w-11 h-11 rounded-2xl border border-gray-200 bg-white text-[#003B94] shadow-sm hover:bg-gray-50" aria-label="Volver">
+                        <i class="ph ph-arrow-left text-xl"></i>
+                    </button>
+                    <div>
+                        <h2 class="text-xl font-black text-[#003B94] leading-tight">Métodos de pago</h2>
+                        <p class="text-gray-400 text-xs">Tarjetas guardadas</p>
+                    </div>
+                </div>
+
+                <div class="rounded-3xl p-5 text-white shadow-xl relative overflow-hidden bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
+                    <div class="absolute -right-6 -top-6 w-32 h-32 rounded-full bg-white/5"></div>
+                    <div class="absolute -left-4 bottom-0 w-24 h-24 rounded-full bg-white/5"></div>
+                    <div class="relative flex justify-between items-start">
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">Mastercard</p>
+                            <p class="text-xs text-white/50 mt-3">Débito</p>
+                        </div>
+                        <div class="flex items-center gap-0 shrink-0" aria-hidden="true">
+                            <span class="w-9 h-9 rounded-full bg-red-500/90 -mr-4 mix-blend-screen"></span>
+                            <span class="w-9 h-9 rounded-full bg-amber-400/85 relative z-10"></span>
+                        </div>
+                    </div>
+                    <p class="relative mt-6 font-mono text-lg tracking-[0.25em]">•••• •••• •••• 4242</p>
+                    <div class="relative mt-4 flex justify-between items-end text-sm">
+                        <div>
+                            <p class="text-[10px] uppercase text-white/50 tracking-widest">Titular</p>
+                            <p class="font-bold tracking-wide">RICARDO SANDOVAL</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] uppercase text-white/50 tracking-widest">Vence</p>
+                            <p class="font-mono font-bold">12/28</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" onclick="alert('Agregar método de pago (simulado)')" class="w-full flex items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-2xl py-4 text-[#003B94] font-black text-sm hover:border-[#003B94] hover:bg-blue-50/50 transition-colors">
+                    <i class="ph ph-plus-circle text-xl"></i>
+                    Agregar método de pago
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Cart Overlay -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] hidden" onclick="toggleCart()"></div>
+
+    <!-- Cart Drawer -->
+    <aside id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white z-[70] shadow-2xl flex flex-col transition-transform duration-300 translate-x-full" aria-label="Carrito de compras">
+        <!-- Header carrito -->
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+            <div class="flex items-center gap-2.5">
+                <i class="ph ph-shopping-cart text-[#003B94] text-2xl"></i>
+                <h2 class="font-black text-gray-900 text-lg">Mi carrito</h2>
+                <span id="cart-count-label" class="bg-[#003B94] text-white text-[10px] font-black px-2 py-0.5 rounded-full min-w-[1.3rem] text-center">0</span>
+            </div>
+            <button type="button" onclick="toggleCart()" class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-500 transition-colors" aria-label="Cerrar carrito">
+                <i class="ph ph-x text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Estado vacío -->
+        <div id="cart-empty" class="flex-1 flex flex-col items-center justify-center gap-4 p-8 text-center">
+            <div class="w-24 h-24 rounded-full bg-gray-50 flex items-center justify-center">
+                <i class="ph ph-shopping-cart text-gray-300 text-5xl"></i>
+            </div>
+            <div>
+                <p class="font-black text-gray-500 text-base">Tu carrito está vacío</p>
+                <p class="text-gray-400 text-sm mt-1">Agrega productos del marketplace<br>para canjearlos con tus puntos.</p>
+            </div>
+        </div>
+
+        <!-- Lista de items + footer -->
+        <div id="cart-items-wrapper" class="hidden flex-1 flex flex-col overflow-hidden">
+            <ul id="cart-items" class="flex-1 overflow-y-auto p-4 space-y-3"></ul>
+
+            <!-- Footer total -->
+            <div class="border-t border-gray-100 px-5 py-4 space-y-3 bg-white">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-500 font-medium text-sm">Saldo disponible</span>
+                    <span class="text-gray-700 font-bold text-sm">2,550 PTS</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-gray-900">Total a canjear</span>
+                    <span id="cart-total" class="text-[#003B94] font-black text-xl">0 PTS</span>
+                </div>
+                <button type="button" onclick="checkout()" class="w-full bg-[#003B94] text-white font-black py-4 rounded-2xl shadow-lg shadow-blue-100 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-sm">
+                    <i class="ph ph-check-circle text-xl"></i>
+                    Confirmar canje
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Navigation Bar -->
+    <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md border border-gray-100 px-2 pt-2 pb-3 shadow-2xl z-50 rounded-[2.5rem] w-[96%] max-w-xl">
+        <div class="flex justify-between items-end gap-0.5">
+            <button type="button" onclick="switchTab('inicio')" class="nav-btn flex flex-col items-center gap-1 text-[#003B94] min-w-0 flex-1 pb-1" data-target="inicio">
+                <div class="icon-container p-2 rounded-xl bg-transparent is-nav-active"><i class="ph ph-house text-lg sm:text-xl"></i></div>
+                <span class="nav-text text-[7px] sm:text-[8px] font-black uppercase tracking-tighter truncate w-full text-center leading-tight">Inicio</span>
+            </button>
+            <button type="button" onclick="switchTab('colaboraciones')" class="nav-btn flex flex-col items-center gap-1 text-gray-400 min-w-0 flex-1 pb-1" data-target="colaboraciones" title="Colaboraciones">
+                <div class="icon-container p-2 rounded-xl bg-transparent"><i class="ph ph-handshake text-lg sm:text-xl"></i></div>
+                <span class="nav-text text-[7px] sm:text-[8px] font-black uppercase tracking-tighter opacity-70 truncate w-full text-center leading-tight">Colab.</span>
+            </button>
+            <button type="button" onclick="switchTab('blue-card')" class="nav-btn nav-scan flex flex-col items-center gap-0 min-w-[4.25rem] shrink-0 -mt-7 relative z-10 text-white" data-target="blue-card" aria-label="Blue Card">
+                <div class="nav-scan-fab icon-container w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center text-white">
+                    <i class="ph ph-identification-card text-2xl sm:text-[1.75rem]"></i>
+                </div>
+                <span class="nav-text text-[7px] sm:text-[8px] font-black uppercase tracking-tighter mt-1 text-[#003B94] drop-shadow-sm leading-tight text-center px-0.5">Blue Card</span>
+            </button>
+            <button type="button" onclick="switchTab('campanas')" class="nav-btn flex flex-col items-center gap-1 text-gray-400 min-w-0 flex-1 pb-1" data-target="campanas">
+                <div class="icon-container p-2 rounded-xl bg-transparent"><i class="ph ph-megaphone text-lg sm:text-xl"></i></div>
+                <span class="nav-text text-[7px] sm:text-[8px] font-black uppercase tracking-tighter opacity-70 truncate w-full text-center leading-tight">Campañas</span>
+            </button>
+            <button type="button" onclick="switchTab('usuario')" class="nav-btn flex flex-col items-center gap-1 text-gray-400 min-w-0 flex-1 pb-1" data-target="usuario">
+                <div class="icon-container p-2 rounded-xl bg-transparent"><i class="ph ph-user text-lg sm:text-xl"></i></div>
+                <span class="nav-text text-[7px] sm:text-[8px] font-black uppercase tracking-tighter opacity-70 truncate w-full text-center leading-tight">Cuenta</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        const MEMBER_ID = 'FT-8822-0941-2024';
+
+        /** Top ventas: datos mock para big cards */
+        const mejorVendidos = [
+            { id: 4, rank: 1, name: 'Morral Corporativo', points: 1200, category: 'Equipaje', soldLabel: '248 canjes', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800', badgeClass: 'from-amber-400 to-orange-500' },
+            { id: 3, rank: 2, name: 'Termo Metálico Blue', points: 450, category: 'Accesorios', soldLabel: '196 canjes', image: '.png', badgeClass: 'from-slate-300 to-slate-400' },
+            { id: 1, rank: 3, name: 'Camiseta "Qué bien me queda"', points: 500, category: 'Ropa', soldLabel: '172 canjes', image: 'Camisa.png', badgeClass: 'from-amber-600 to-amber-800' },
+        ];
+
+        const productosFarmatodo = [
+            { id: 1, name: 'Camiseta "Qué bien me queda"', points: 500, category: 'Ropa', image: 'Camisa.png' },
+            { id: 2, name: 'Gorra Corporativa Premium', points: 350, category: 'Accesorios', image: 'Gemini_Generated_Image_ze596kze596kze59.png' },
+            { id: 3, name: 'Termo Metálico Blue', points: 450, category: 'Accesorios', image: '.png' },
+            { id: 4, name: 'Morral Corporativo', points: 1200, category: 'Equipaje', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400' },
+        ];
+
+        const temporadaVerano = [
+            { id: 201, name: 'Kit protector solar corporativo', points: 320, category: 'Verano', image: 'https://images.unsplash.com/photo-1526947425960-945c6e85659e?w=400' },
+            { id: 202, name: 'Gorra visera UV', points: 280, category: 'Verano', image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400' },
+            { id: 203, name: 'Botella térmica 1L', points: 410, category: 'Verano', image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400' },
+        ];
+
+        const colaboraciones = [
+            { id: 101, brand: 'Cubbit', name: 'Audífonos Bluetooth Pro', discountPoints: 1200, desc: '30% de descuento', image: 'audifonos%20cubit.webp' },
+            { id: 102, brand: 'Pawer', name: 'Camisa Sport Hombre', discountPoints: 800, desc: '25% de descuento', image: 'camisa%20pawer%20hombre.jfif' },
+            { id: 103, brand: 'Pawer', name: 'Chaqueta Rompeviento', discountPoints: 1500, desc: '20% de descuento', image: 'chaqueta%20mujer%20pawer.webp' },
+            { id: 104, brand: 'Kotoperiz', name: 'Collar Artesanal', discountPoints: 600, desc: '15% de descuento', image: 'collar%20kotoperiz.jfif' },
+            { id: 105, brand: 'Cubbit', name: 'Termo Hidratación', discountPoints: 900, desc: 'Beneficio exclusivo', image: 'termo%20curbbit.webp' },
+        ];
+
+        const blueExclusivo = [
+            { id: 301, name: 'Taza Farmatodo', points: 180, category: 'Blue Exclusivo', image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=400' },
+            { id: 302, name: 'Pin Corporativo', points: 90, category: 'Blue Exclusivo', image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400' },
+            { id: 303, name: 'Cuaderno Premium', points: 220, category: 'Blue Exclusivo', image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400' },
+            { id: 304, name: 'Llavero Blue', points: 120, category: 'Blue Exclusivo', image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400' },
+            { id: 305, name: 'Bolígrafo Ed. Especial', points: 75, category: 'Blue Exclusivo', image: 'https://images.unsplash.com/photo-1585336261022-6808d3e8e1c2?w=400' },
+            { id: 306, name: 'Sticker Pack', points: 50, category: 'Blue Exclusivo', image: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=400' },
+        ];
+
+        const campanasPuntos = [
+            { id: 'c1', title: 'Encuesta de clima laboral', reward: 150, desc: 'Completa la encuesta anónima y suma puntos.', icon: 'ph-chat-circle-text', ends: '30 abr' },
+            { id: 'c2', title: 'Reto bienestar: 10.000 pasos', reward: 200, desc: 'Sincroniza tu app de salud y alcanza la meta semanal.', icon: 'ph-footprints', ends: 'En curso' },
+            { id: 'c3', title: 'Curso obligatorio RR.HH.', reward: 100, desc: 'Finaliza el módulo en el aula virtual.', icon: 'ph-graduation-cap', ends: '15 may' },
+            { id: 'c4', title: 'Refiere a un colaborador', reward: 500, desc: 'Bonus cuando tu referido complete 90 días.', icon: 'ph-users-three', ends: 'Sin límite' },
+        ];
+
+        const historialTransacciones = [
+            { id: 1, type: 'earn', title: 'Campaña: Encuesta clima', points: 150, date: '18 mar 2026' },
+            { id: 2, type: 'redeem', title: 'Canje: Termo Metálico Blue', points: -450, date: '12 mar 2026' },
+            { id: 3, type: 'earn', title: 'Bono puntualidad marzo', points: 80, date: '01 mar 2026' },
+            { id: 4, type: 'redeem', title: 'Canje: Gorra Corporativa', points: -350, date: '22 feb 2026' },
+            { id: 5, type: 'earn', title: 'Campaña: Curso RR.HH.', points: 100, date: '10 feb 2026' },
+        ];
+
+        window.handleImageError = function(imgElement) {
+            const parent = imgElement.parentElement;
+            imgElement.onerror = null; 
+            imgElement.style.display = 'none';
+            const fallbackDiv = document.createElement('div');
+            fallbackDiv.className = 'w-full h-full flex items-center justify-center bg-gray-100 text-gray-400 absolute inset-0';
+            fallbackDiv.innerHTML = '<i class="ph ph-image text-4xl"></i>';
+            parent.appendChild(fallbackDiv);
+        };
+
+        function cardMejorVendido(p) {
+            return `
+                <article class="relative flex rounded-2xl overflow-hidden shadow-md border border-gray-100 min-h-[7.5rem] sm:min-h-[7.75rem] group bg-gray-100">
+                    <div class="w-[34%] sm:w-[30%] max-w-[7.5rem] flex-shrink-0 bg-gray-200 relative overflow-hidden min-h-[7.5rem]">
+                        <img src="${p.image}" alt="${p.name}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 z-10" onerror="handleImageError(this)">
+                    </div>
+                    <div class="flex-1 min-w-0 flex flex-col justify-center p-3 sm:p-4 relative bg-gradient-to-br from-[#0f172a] to-[#1e3a5f] text-white">
+                        <div class="absolute top-2 right-2 z-20 flex items-center gap-1.5">
+                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br ${p.badgeClass} text-white font-black text-xs shadow border border-white/20">#${p.rank}</span>
+                        </div>
+                        <p class="text-[9px] font-black text-blue-200/90 uppercase tracking-widest mb-0.5 pr-14">${p.category}</p>
+                        <h3 class="text-white font-black text-sm sm:text-base leading-snug mb-1.5 line-clamp-2 pr-2">${p.name}</h3>
+                        <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] sm:text-xs">
+                            <span class="inline-flex items-center gap-1 font-black text-white"><i class="ph-fill ph-star text-amber-300 text-sm"></i> ${p.points} PTS</span>
+                            <span class="text-white/85 font-semibold"><i class="ph ph-chart-line-up"></i> ${p.soldLabel}</span>
+                        </div>
+                        <button type="button" onclick="addToCart(${p.id})" class="mt-2 self-start bg-white/95 text-[#003B94] font-black text-[11px] py-1.5 px-3 rounded-xl shadow flex items-center gap-1.5 active:scale-[0.98] transition-transform">
+                            <i class="ph ph-shopping-bag text-sm"></i> Agregar
+                        </button>
+                    </div>
+                </article>`;
+        }
+
+        function cardProducto(product) {
+            return `
+                <article class="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group border border-gray-100 flex flex-col">
+                    <div class="h-44 bg-gray-100 relative overflow-hidden">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 relative z-10" onerror="handleImageError(this)">
+                    </div>
+                    <div class="p-4 flex-1 flex flex-col justify-between">
+                        <div>
+                            <p class="text-[10px] text-blue-400 font-black uppercase tracking-widest mb-1">${product.category}</p>
+                            <h3 class="font-bold text-gray-800 text-sm mb-3 h-10 line-clamp-2">${product.name}</h3>
+                        </div>
+                        <div class="flex justify-between items-center bg-gray-50 p-2 rounded-2xl">
+                            <span class="text-[#003B94] font-black text-base">${product.points} PTS</span>
+                            <button type="button" onclick="addToCart(${product.id})" class="bg-[#003B94] text-white p-2 rounded-xl shadow-lg shadow-blue-100 active:scale-95 transition-transform"><i class="ph ph-shopping-bag"></i></button>
+                        </div>
+                    </div>
+                </article>`;
+        }
+
+        function renderInicio() {
+            document.getElementById('mas-vendidos-container').innerHTML = mejorVendidos.map(cardMejorVendido).join('');
+            document.getElementById('productos-farmatodo-container').innerHTML = productosFarmatodo.map(cardProducto).join('');
+            document.getElementById('verano-container').innerHTML = temporadaVerano.map(cardProducto).join('');
+            document.getElementById('blue-exclusivo-container').innerHTML = blueExclusivo.map(cardProducto).join('');
+        }
+
+        function renderColaboraciones() {
+            document.getElementById('colaboraciones-container').innerHTML = colaboraciones.map(product => `
+                <article class="bg-white rounded-3xl p-4 flex gap-5 shadow-sm border border-gray-50 hover:border-blue-200 transition-all group overflow-hidden relative">
+                    <div class="w-32 h-32 bg-gray-50 rounded-2xl flex-shrink-0 overflow-hidden relative border border-gray-100">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 relative z-10" onerror="handleImageError(this)">
+                    </div>
+                    <div class="flex flex-col justify-between py-1 flex-1 relative z-10">
+                        <div>
+                            <span class="text-xs font-black text-blue-500 uppercase tracking-[0.15em] mb-1">${product.brand}</span>
+                            <h3 class="font-black text-gray-800 text-lg leading-tight mb-2">${product.name}</h3>
+                            <p class="text-sm text-gray-500 italic underline decoration-blue-200 underline-offset-4">${product.desc}</p>
+                        </div>
+                        <div class="mt-4"><div class="bg-blue-50 text-[#003B94] text-xs font-black px-3 py-2 rounded-xl flex items-center gap-2"><i class="ph-fill ph-star"></i> APLICA CON ${product.discountPoints} PTS</div></div>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function renderCampanas() {
+            document.getElementById('campanas-container').innerHTML = campanasPuntos.map(c => `
+                <article class="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm flex gap-4 items-start">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-50 text-[#003B94] flex items-center justify-center flex-shrink-0">
+                        <i class="ph ${c.icon} text-2xl"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex flex-wrap items-center gap-2 mb-1">
+                            <h3 class="font-black text-gray-900">${c.title}</h3>
+                            <span class="text-xs font-black text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">+${c.reward} PTS</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">${c.desc}</p>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider"><i class="ph ph-calendar-blank inline"></i> ${c.ends}</p>
+                        <button type="button" class="mt-3 text-sm font-black text-[#003B94] hover:underline">Participar</button>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function setCuentaQr() {
+            const el = document.getElementById('blue-card-qr');
+            if (el) el.src = 'https://api.qrserver.com/v1/create-qr-code/?size=128x128&data=' + encodeURIComponent(MEMBER_ID);
+        }
+
+        function resetBlueCardView() {
+            const ov = document.getElementById('blue-card-overview');
+            const sc = document.getElementById('blue-card-scanner');
+            if (ov && sc) {
+                ov.classList.remove('hidden');
+                sc.classList.add('hidden');
+            }
+        }
+
+        function showBlueCardScanner(show) {
+            const ov = document.getElementById('blue-card-overview');
+            const sc = document.getElementById('blue-card-scanner');
+            if (!ov || !sc) return;
+            ov.classList.toggle('hidden', !!show);
+            sc.classList.toggle('hidden', !show);
+        }
+        window.showBlueCardScanner = showBlueCardScanner;
+
+        function renderHistorial() {
+            document.getElementById('historial-transacciones').innerHTML = historialTransacciones.map(t => {
+                const isEarn = t.type === 'earn';
+                const sign = t.points > 0 ? '+' : '';
+                return `
+                <li class="px-4 py-2.5 flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                        <p class="font-bold text-gray-900 text-xs sm:text-sm truncate">${t.title}</p>
+                        <p class="text-[11px] text-gray-400">${t.date}</p>
+                    </div>
+                    <span class="font-black text-xs sm:text-sm flex-shrink-0 ${isEarn ? 'text-emerald-600' : 'text-red-600'}">${sign}${t.points} PTS</span>
+                </li>`;
+            }).join('');
+        }
+
+        function cerrarSesion() {
+            alert('Sesión cerrada (simulado). En producción aquí se limpiaría el token y se redirigiría al login.');
+        }
+
+        function resetCuentaView() {
+            document.querySelectorAll('.cuenta-view').forEach(el => el.classList.add('hidden'));
+            document.getElementById('cuenta-view-home')?.classList.remove('hidden');
+        }
+
+        function showCuentaView(name) {
+            document.querySelectorAll('.cuenta-view').forEach(el => el.classList.add('hidden'));
+            document.getElementById('cuenta-view-' + name)?.classList.remove('hidden');
+        }
+        window.showCuentaView = showCuentaView;
+
+        function switchTab(activeId) {
+            resetBlueCardView();
+            resetCuentaView();
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + activeId).classList.remove('hidden');
+            const headerPoints = document.getElementById('header-points');
+            const headerLogout = document.getElementById('header-logout');
+            const enCuenta = activeId === 'usuario';
+            headerPoints.classList.toggle('hidden', enCuenta);
+            headerLogout.classList.toggle('hidden', !enCuenta);
+            headerLogout.classList.toggle('flex', enCuenta);
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                const target = btn.dataset.target;
+                const isActive = target === activeId;
+                const isScan = target === 'blue-card';
+
+                if (!isScan) {
+                    btn.classList.toggle('text-[#003B94]', isActive);
+                    btn.classList.toggle('scale-105', isActive);
+                    btn.classList.toggle('text-gray-400', !isActive);
+                    const icon = btn.querySelector('.icon-container');
+                    icon.classList.toggle('is-nav-active', isActive);
+                    icon.classList.toggle('text-gray-500', !isActive);
+                    const label = btn.querySelector('.nav-text');
+                    label.classList.toggle('opacity-100', isActive);
+                    label.classList.toggle('opacity-70', !isActive);
+                } else {
+                    const fab = btn.querySelector('.nav-scan-fab');
+                    fab.classList.toggle('is-active', isActive);
+                    const label = btn.querySelector('.nav-text');
+                    label.classList.toggle('font-black', isActive);
+                    label.classList.toggle('opacity-100', isActive);
+                    label.classList.toggle('opacity-70', !isActive);
+                }
+            });
+        }
+
+        /* =========================================
+           CARRITO DE COMPRAS
+        ========================================= */
+        let cart = [];
+
+        function getAllProducts() {
+            return [
+                ...productosFarmatodo,
+                ...temporadaVerano,
+                ...blueExclusivo,
+                ...mejorVendidos.map(p => ({ id: p.id, name: p.name, points: p.points, category: p.category, image: p.image })),
+            ];
+        }
+
+        function getProductById(id) {
+            return getAllProducts().find(p => p.id === id);
+        }
+
+        function addToCart(productId) {
+            const product = getProductById(productId);
+            if (!product) return;
+
+            const existing = cart.find(item => item.id === productId);
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            renderCart();
+            updateCartBadge();
+            showCartToast(product.name);
+        }
+        window.addToCart = addToCart;
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            renderCart();
+            updateCartBadge();
+        }
+        window.removeFromCart = removeFromCart;
+
+        function updateCartBadge() {
+            const total = cart.reduce((sum, item) => sum + item.qty, 0);
+            const badge = document.getElementById('cart-badge');
+            const countLabel = document.getElementById('cart-count-label');
+            if (total > 0) {
+                badge.textContent = total > 9 ? '9+' : total;
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+            } else {
+                badge.classList.add('hidden');
+                badge.classList.remove('flex');
+            }
+            if (countLabel) countLabel.textContent = total;
+        }
+
+        function renderCart() {
+            const empty = document.getElementById('cart-empty');
+            const wrapper = document.getElementById('cart-items-wrapper');
+            const itemsList = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
+
+            if (cart.length === 0) {
+                empty.classList.remove('hidden');
+                wrapper.classList.add('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            wrapper.classList.remove('hidden');
+
+            const total = cart.reduce((sum, item) => sum + item.points * item.qty, 0);
+            totalEl.textContent = total.toLocaleString() + ' PTS';
+
+            itemsList.innerHTML = cart.map(item => `
+                <li class="flex items-center gap-3 bg-gray-50 rounded-2xl p-3">
+                    <div class="w-14 h-14 rounded-xl bg-gray-200 overflow-hidden shrink-0 relative border border-gray-100">
+                        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" onerror="handleImageError(this)">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-bold text-gray-900 text-sm leading-snug line-clamp-2">${item.name}</p>
+                        <p class="text-[#003B94] font-black text-xs mt-0.5">${item.points.toLocaleString()} PTS × ${item.qty}</p>
+                    </div>
+                    <div class="flex flex-col items-end gap-2 shrink-0">
+                        <span class="font-black text-gray-900 text-sm">${(item.points * item.qty).toLocaleString()} PTS</span>
+                        <button type="button" onclick="removeFromCart(${item.id})" class="text-red-400 hover:text-red-600 transition-colors" aria-label="Eliminar producto">
+                            <i class="ph ph-trash text-base"></i>
+                        </button>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        function toggleCart() {
+            const drawer = document.getElementById('cart-drawer');
+            const overlay = document.getElementById('cart-overlay');
+            const isOpen = !drawer.classList.contains('translate-x-full');
+            if (isOpen) {
+                drawer.classList.add('translate-x-full');
+                overlay.classList.add('hidden');
+            } else {
+                drawer.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+            }
+        }
+        window.toggleCart = toggleCart;
+
+        function showCartToast(productName) {
+            let toast = document.getElementById('cart-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'cart-toast';
+                toast.className = 'fixed bottom-28 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm font-bold px-4 py-2.5 rounded-2xl shadow-xl z-[80] flex items-center gap-2 transition-all duration-300 opacity-0 pointer-events-none';
+                document.body.appendChild(toast);
+            }
+            toast.innerHTML = `<i class="ph ph-check-circle text-emerald-400 text-base"></i> Agregado al carrito`;
+            toast.classList.remove('opacity-0');
+            toast.classList.add('opacity-100');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0');
+            }, 2000);
+        }
+
+        function checkout() {
+            if (cart.length === 0) return;
+            const total = cart.reduce((sum, item) => sum + item.points * item.qty, 0);
+            alert(`✅ Canje confirmado (simulado)\n\nTotal: ${total.toLocaleString()} PTS\n\nEn producción aquí se procesaría el pedido y se descontarían los puntos.`);
+            cart = [];
+            renderCart();
+            updateCartBadge();
+            toggleCart();
+        }
+        window.checkout = checkout;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderInicio();
+            renderColaboraciones();
+            renderCampanas();
+            setCuentaQr();
+            renderHistorial();
+            switchTab('inicio');
+        });
+    </script>
+</body>
+</html>
